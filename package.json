@@ -1,0 +1,13 @@
+{
+  "name": "queuep",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "gulp babel && node dist/index.js"
+  },
+  "dependencies": {
+    "babel-preset-node6": "^11.0.0",
+    "babili": "^0.0.12",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2"
+  }
+}
