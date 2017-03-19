@@ -1,6 +1,16 @@
 {
   "name": "queuep",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Redis backed queue optimized for congestion control and just that",
+  "main": "dist/QueueP.js",
+  "author": "pubudud",
+  "license": "MIT",
+  "url": "https://github.com/pupudu/queuep/issues",
+  "email": "pubudu.dodan@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pupudu/queuep.git"
+  },
   "scripts": {
     "start": "gulp babel && node dist/index.js",
     "pre-push-dependencies": "npm install",
@@ -15,6 +25,7 @@
     "redis": "^2.7.1"
   },
   "devDependencies": {
+    "babel-preset-node6": "^11.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "pre-commit": "^1.2.2",
