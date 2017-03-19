@@ -1,0 +1,71 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    // Errors
+    "valid-jsdoc": ["error", {
+      "requireReturn": false
+    }],
+    "no-unsafe-negation": ["error"],
+    "no-template-curly-in-string": ["error"],
+    "no-extra-parens": ["error", "all"],
+
+    // Best Practices
+    "eqeqeq": ["error"],
+    "array-callback-return": ["error"],
+    "no-useless-escape": ["error"],
+    "complexity": ["error", 10],
+    "no-alert": ["error"],
+    "no-else-return": ["error"],
+    "no-eval": ["error"],
+    "no-loop-func": ["error"],
+    "no-magic-numbers": ["error", { "ignoreArrayIndexes": true, "ignore": [0, 1, -1] }],
+    "no-multi-spaces": ["error"],
+
+    // NodeJs
+    "callback-return": ["error"],
+    "handle-callback-err": ["error"],
+
+    // Stylic
+    "no-unneeded-ternary": ["error"],
+    "comma-spacing": ["error"],
+    "eol-last": ["error"],
+    "consistent-this": ["error", "_this"],
+    "comma-dangle": ["error", "never"],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "key-spacing": ["error", { "mode": "strict" }],
+    "max-depth": ["error", 5],
+    "max-params": ["error", 5],
+    "new-cap": ["error", {"capIsNewExceptions": ["Router"]}],
+    "no-multiple-empty-lines": ["error"],
+    "func-call-spacing": ["error", "never"],
+    "require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": true,
+        "MethodDefinition": true,
+        "ClassDeclaration": true,
+        "ArrowFunctionExpression": false
+      }
+    }],
+    "space-before-function-paren": ["error", {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+    "space-before-blocks": ["error", {"functions": "always", "keywords": "always", "classes": "always" }],
+    "semi": ["error"],
+
+    // ES6
+    "arrow-body-style": ["error"],
+    "no-var": ["error"],
+//    "prefer-const": ["error"],
+
+    // Variables
+    "no-undef-init": ["error"],
+//    "init-declarations": ["error"],
+    "no-use-before-define": ["error"]
+  }
+}
