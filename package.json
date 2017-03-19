@@ -2,12 +2,45 @@
   "name": "queuep",
   "version": "0.0.0",
   "scripts": {
-    "start": "gulp babel && node dist/index.js"
+    "start": "gulp babel && node dist/index.js",
+    "pre-push-dependencies": "npm install",
+    "eslint": "eslint 'src/**/*.js'",
+    "eslint-fix": "eslint 'src/**/*.js' --fix",
+    "git-uncommited-changes": "git diff --quiet --cached",
+    "git-unstaged-changes": "git diff --quiet",
+    "git-branch": "bash git-hooks/branch.sh",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "babel-preset-node6": "^11.0.0",
-    "babili": "^0.0.12",
+    "redis": "^2.7.1"
+  },
+  "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2"
+    "gulp-babel": "^6.1.2",
+    "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
+    "lint-staged": "^3.3.1",
+    "eslint": "^3.16.1"
+  },
+  "pre-push": [
+    "eslint",
+    "git-unstaged-changes",
+    "git-uncommited-changes",
+    "git-branch",
+    "test"
+  ],
+  "pre-commit": [
+    "git-branch",
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "tests/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
