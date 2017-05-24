@@ -5,9 +5,6 @@
 import Redis from 'redis';
 import * as constants from './constants';
 
-let redis = Redis.createClient();
-
-
 /**
  *  Redis backed queue for congestion control with a trade-off for data loss
  */
@@ -22,6 +19,10 @@ export default class QueueP {
         QueueP._dataMap = {};
         QueueP._keyQueue = {};
         QueueP.dirtyCheckers = {};
+
+        if (QueueP._strategy === "redis") {
+            QueueP._redis = Redis.createClient();
+        }
     }
 
     /**
@@ -78,7 +79,7 @@ export default class QueueP {
      */
     static _getEntry(hSet, key, callback) {
         if (QueueP._strategy === "redis") {
-            redis.hget(hSet, key, function (err, res) {
+            QueueP._redis.hget(hSet, key, function (err, res) {
                 if (err) {
                     return callback(err);
                 }
@@ -107,7 +108,8 @@ export default class QueueP {
      */
     static _setEntry(hSet, key, entry, callback) {
         if (QueueP._strategy === "redis") {
-            redis.hset(hSet, key, JSON.stringify(entry), function (err, res) {
+
+            QueueP._redis.hset(hSet, key, JSON.stringify(entry), function (err, res) {
                 return callback(err, res);
             });
         } else {
