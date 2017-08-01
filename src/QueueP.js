@@ -1,70 +1,147 @@
 /**
+ * Created by pubudud on 7/23/17.
+ */
+/**
  * Created by pubudud on 3/18/17.
  */
 
 import Redis from 'redis';
-import * as constants from './constants';
-
-let redis = Redis.createClient();
-
+import {
+    DEFAULT_INTERVAL,
+    STRATEGIES,
+    noop,
+    fakeLogger as logger,
+    dirtyCheckers,
+    getStatsString
+} from './constants';
 
 /**
  *  Redis backed queue for congestion control with a trade-off for data loss
  */
-export default class QueueP {
+class QueueP {
 
     /**
      * Constructor
-     * @param {string} strategy - Redis or In-memory
      */
-    constructor(strategy) {
-        QueueP._strategy = strategy;
-        QueueP._dataMap = {};
-        QueueP._keyQueue = {};
-        QueueP.dirtyCheckers = {};
+    constructor() {
+        this._dataMap = {};
+        this._keyQueue = {};
+        this.dirtyCheckers = {};
+        this._strategy = STRATEGIES.STATE;
+        this.logger = logger;
+        this.stats = {};
+    }
+
+    /**
+     * Initialize QueueP with a custom strategy rather than In-Memory-Application-State
+     * @param {string} [strategy] - Redis or In-memory
+     * @param {object} logger - an actual instance of some logger to override the noop logger
+     * @param {function} [callback] - optional callback
+     * @returns {Promise} <-
+     */
+    init(strategy, logger, callback) {
+        return this.returnPromiseOrCallback(new Promise((resolve, reject) => {
+            // Set Strategy
+            if (strategy !== STRATEGIES.STATE || strategy !== STRATEGIES.REDIS) {
+                let err = new Error(`Invalid Strategy: ${strategy}`);
+                return reject(err);
+            }
+            this._strategy = strategy;
+            if (this._strategy === STRATEGIES.REDIS) {
+                this._redis = Redis.createClient();
+            }
+
+            // Set Logger
+            this.logger = logger;
+
+            return resolve();
+        }), callback);
     }
 
     /**
      * Initialize a queue for a given hSet
      *
-     * @param {object} options - configurations for the queue
-     * @param {!string} options.hSet - Key of the parent hset
-     * @param {number} [options.interval = 1000] - Interval for executing the consumer function
-     * @param {function} options.dirtyChecker - Function to evaluate whether overriding value is different from earlier
-     * @param {function} options.consumer - Function which implements the consumer logic
+     * @param {!string} hSet - Key of the parent hset
+     * @param {number} [interval = 1000] - Interval for executing the consumer function
+     * @param {function} dirtyChecker - Function to evaluate whether overriding value is different from earlier
+     * @param {function} consumer - Function which implements the consumer logic
      */
-    static initQueue(options) {
-        let {hSet, interval = constants.DEFAULT_INTERVAL, dirtyChecker, consumer} = options;
+    initQueue({hSet, interval = DEFAULT_INTERVAL, dirtyChecker, consumer}) {
 
-        QueueP.dirtyCheckers[hSet] = dirtyChecker;
-        setInterval(function () {
-            if (!QueueP._keyQueue[hSet]) {
+        this.dirtyCheckers[hSet] = dirtyChecker;
+        this.stats[hSet] = {
+            interval,
+            processedCount: 0,
+            failureCount: 0
+        };
+
+        setInterval(() => {
+            if (!this._keyQueue[hSet]) {
                 return;
             }
-            let key = QueueP._keyQueue[hSet].shift();
+            let key = this._keyQueue[hSet].shift();
 
             if (!hSet || !key) {
                 return;
             }
 
-            QueueP._getEntry(hSet, key, function (err, entry) {
-                if (err) {
-                    return;
-                }
-                if (entry && entry.isDirty) {
-                    consumer(entry.data, function (err) {
-                        if (err) {
-                            return;
+            this._getEntry(hSet, key)
+                .then((entry) => {
+                    if (entry && entry.isDirty) {
+
+                        if (consumer.length === 1) { // Promise handlers for signalling using promise approach
+                            consumer(entry.data)
+                                .then(this._markEntryAsDone.bind(this, hSet, key, entry))
+                                .catch(this._handleEntryConsumptionFailure.bind(this, hSet));
+
+                        } else { // length = 2 => Callback for signalling using callback approach
+                            consumer(entry.data, (err) => {
+                                if (err)
+                                    return this._handleEntryConsumptionFailure(hSet, err);
+
+                                this._markEntryAsDone(hSet, key, entry);
+                            });
                         }
-                        entry.isDirty = false;
-                        QueueP._setEntry(hSet, key, entry, function () {
-                            // Iteration success. Do nothing
-                        });
-                    });
-                }
-            });
+                    }
+                })
+                .catch((err) => {
+                    this.logger.error(err);
+                });
 
         }, interval);
+    }
+
+    /**
+     * Handle if an error occurred while running the consumer for a specific entry
+     * Currently only a stat is collected. Can have a fallback mechanism or a retry strategy
+     *
+     * @param {string} hSet <-
+     * @param {object} err <-
+     * @private
+     */
+    _handleEntryConsumptionFailure(hSet, err) {
+        noop(err);
+        this.stats[hSet].failureCount++;
+    }
+
+    /**
+     * Mark an entry as done processing. i.e -> set as not dirty(already processed)
+     * @param {string} hSet <- parent set
+     * @param {string} key <- key of the parent set (map structure)
+     * @param {object} entry <-
+     * @private
+     */
+    _markEntryAsDone(hSet, key, entry) {
+        entry.isDirty = false;
+
+        this._setEntry(hSet, key, entry)
+            .then(noop) // Iteration success. Do nothing
+            .catch((err) => {
+                this.logger.error(err);
+            });
+
+        // Collect stat to print on demand
+        this.stats[hSet].processedCount++;
     }
 
     /**
@@ -72,27 +149,28 @@ export default class QueueP {
      *
      * @param {string} hSet - Key of the parent set
      * @param {string} key - Key of the actual target data
-     * @param {function} callback - callback
-     * @returns {*} - call to callback
      * @private
+     * @returns {Promise} <-
      */
-    static _getEntry(hSet, key, callback) {
-        if (QueueP._strategy === "redis") {
-            redis.hget(hSet, key, function (err, res) {
-                if (err) {
-                    return callback(err);
+    _getEntry(hSet, key) {
+        return new Promise((resolve, reject) => {
+            if (this._strategy === STRATEGIES.REDIS) {
+                this._redis.hget(hSet, key, (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    if (!res) {
+                        return resolve({});
+                    }
+                    return resolve(JSON.parse(res));
+                });
+            } else {
+                if (!this._dataMap[hSet]) {
+                    return resolve({});
                 }
-                if (!res) {
-                    return callback(null, {});
-                }
-                return callback(null, JSON.parse(res));
-            });
-        } else {
-            if (!QueueP._dataMap[hSet]) {
-                return callback(null, {});
+                return resolve(this._dataMap[hSet][key] || {});
             }
-            return callback(null, QueueP._dataMap[hSet][key] || {});
-        }
+        });
     }
 
     /**
@@ -101,22 +179,28 @@ export default class QueueP {
      * @param {string} hSet - Key of the parent set
      * @param {string} key - key of the target data
      * @param {Object} entry - Object consisting of the target data and the isDirty attribute
-     * @param {function} callback - callback
-     * @returns {*} - call to callback
      * @private
+     * @returns {Promise} <-
      */
-    static _setEntry(hSet, key, entry, callback) {
-        if (QueueP._strategy === "redis") {
-            redis.hset(hSet, key, JSON.stringify(entry), function (err, res) {
-                return callback(err, res);
-            });
-        } else {
-            if (!QueueP._dataMap[hSet]) {
-                QueueP._dataMap[hSet] = {};
+    _setEntry(hSet, key, entry) {
+        return new Promise((resolve, reject) => {
+            if (this._strategy === STRATEGIES.REDIS) {
+
+                this._redis.hset(hSet, key, JSON.stringify(entry), (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+
+            } else {
+                if (!this._dataMap[hSet]) {
+                    this._dataMap[hSet] = {};
+                }
+                this._dataMap[hSet][key] = entry;
+                return resolve();
             }
-            QueueP._dataMap[hSet][key] = entry;
-            return callback(null);
-        }
+        });
     }
 
     /**
@@ -125,34 +209,40 @@ export default class QueueP {
      * @param {string} hSet - Key of the parent dataset
      * @param {string} key - Key of the data to be queued
      * @param {Object|string|number} data - data to be enqueued for delayed processing
-     * @param {function} callback - callback
+     * @param {function} [callback] - optional callback
+     * @returns {Promise|undefined} <-
      */
-    static publish(hSet, key, data, callback) {
-        QueueP._getEntry(hSet, key, function (err, entry) {
-            if (err) {
-                return callback(err);
-            }
-            if (!QueueP.dirtyCheckers[hSet]) {
+    publish(hSet, key, data, callback) {
+        return this.returnPromiseOrCallback(new Promise((resolve, reject) => {
+            if (!this.dirtyCheckers[hSet]) {
                 let err = new Error(`DirtyChecker not available for hSet: ${hSet}`);
-                return callback(err);
-            }
-            let oldData = entry.data,
-                isDirty = QueueP.dirtyCheckers[hSet](oldData, data);
 
-            if (isDirty) {
-                let entry = {
-                    data: data,
-                    isDirty: true
-                };
-                QueueP._setEntry(hSet, key, entry, function (err) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    QueueP._enqueue(hSet, key);
-                    return callback(null);
-                });
+                return reject(err);
             }
-        });
+            this._getEntry(hSet, key)
+                .then((entry) => {
+
+                    let oldData = entry.data,
+                        isDirty = this.dirtyCheckers[hSet](oldData, data);
+
+                    if (!isDirty) {
+                        return resolve();
+                    }
+
+                    // Set Entry and Enqueue if dirty
+                    this
+                        ._setEntry(hSet, key, {
+                            data: data,
+                            isDirty: true
+                        })
+                        .then(() => {
+                            this._enqueue(hSet, key);
+                            return resolve();
+                        })
+                        .catch((err) => reject(err));
+                })
+                .catch((err) => reject(err));
+        }), callback);
     }
 
     /**
@@ -162,12 +252,57 @@ export default class QueueP {
      * @param {!string} key - Key of actual target data
      * @private
      */
-    static _enqueue(hSet, key) {
-        if (!QueueP._keyQueue[hSet]) {
-            QueueP._keyQueue[hSet] = [];
+    _enqueue(hSet, key) {
+        if (!this._keyQueue[hSet]) {
+            this._keyQueue[hSet] = [];
         }
-        if (QueueP._keyQueue[hSet].indexOf(key) === -1) {
-            QueueP._keyQueue[hSet].push(key);
+        if (this._keyQueue[hSet].indexOf(key) === -1) {
+            this._keyQueue[hSet].push(key);
         }
     }
+
+    /**
+     * @param {string} hSet - target hset
+     * @return {Object} - stat object
+     */
+    getStats(hSet) {
+        return {
+            queueLength: this._keyQueue[hSet].length,
+            interval: this.stats[hSet].interval,
+            totalProcessedCount: this.stats[hSet].processedCount,
+            failureCount: this.stats[hSet].failureCount
+        };
+    }
+
+    /**
+     * @param {string} hSet - target hset
+     * @param {Object} [logger] - override logger
+     * @param {String} [level] - override log level
+     */
+    printStats(hSet, logger, level = 'info') {
+        (logger || this.logger)[level](
+            getStatsString(hSet, this._keyQueue[hSet] || [], this.stats[hSet])
+        );
+    }
+
+    /**
+     * Call callback function if present or return a promise to be handled by the caller
+     * @param {Promise} promise <-
+     * @param {Function} [callback] <-
+     * @return {Promise|undefined} <-
+     */
+    returnPromiseOrCallback(promise, callback) {
+        if (callback) {
+            promise
+                .then((result) => callback(null, result))
+                .catch((err) => callback(err));
+        }
+        return promise;
+    }
 }
+
+export default new QueueP();
+
+export const strategies = STRATEGIES;
+
+export const makeObjectDirtyChecker = dirtyCheckers.fieldBased;
