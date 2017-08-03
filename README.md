@@ -21,7 +21,7 @@ First, initialize a queue(can have multiple queues) with the minimal required co
     import qp from 'queuep';
 
     qp.initQueue({
-        hSet: "app_online_status",
+        id: "app_online_status",
         consumer: updateOnlineStatus
     });
 
@@ -33,9 +33,9 @@ Then you can publish data to the queue.
     });
 initQueue and publish method calls can be in the same module or in different modules. I personally prefer to keep the initQueue and publish methods in the same module. But that is completely up to you to decide.
 
-* Note 1: The argument hSet is used to identify the queue. An application can have any number of queuep queues.
+* Note 1: The argument **id** is used to identify the queue. An application can have any number of queuep queues.
 
-* Note 2: The argument consumer should be a function reference which should be either;
+* Note 2: The argument **consumer** should be a function reference which should be either;
 
 A function which accepts two arguments. First argument will give the data published from the publish method. The second argument is an error-first callback that should be called to signal QueueP that the consume task has finished.
 See example:
@@ -85,6 +85,11 @@ When the load received is too damn high, and ignoring duplicates and distributin
 ##### No Starvation
 
 The internal algorithm used in QueueP takes measures to avoid starvation without compromising performance. Algorithm is based on the FIFO principle.
+
+#### Backed by redis
+QueueP supports(optional) redis as the intermediate storage for published data. This ensures that queued data is preserved even if the NodeJs application was restarted. 
+
+QueueP v0.0.7 has the redis strategy built in. However, redis strategy will be taken out and will be implemented as a plugin. This will make the core library even lighter while opening the opportunity to use other methods of intermediate storage such as rabbitMq or nats. 
 
 ### License
 MIT

@@ -61,12 +61,23 @@ class QueueP {
     /**
      * Initialize a queue for a given hSet
      *
-     * @param {!string} hSet - Key of the parent hset
+     * @param {string} [hSet] - Key of the parent hset(deprecated)
+     * @param {string} [id] - alias for hSet
      * @param {number} [interval = 1000] - Interval for executing the consumer function
-     * @param {function} dirtyChecker - Function to evaluate whether overriding value is different from earlier
+     * @param {function} [dirtyChecker] - Function to evaluate whether overriding value is different from earlier
      * @param {function} consumer - Function which implements the consumer logic
      */
-    initQueue({hSet, interval = DEFAULT_INTERVAL, dirtyChecker, consumer}) {
+    initQueue({hSet, id, interval = DEFAULT_INTERVAL, dirtyChecker, consumer}) {
+
+        // Assign hSet alias value back to hSet if specified
+        if (id) {
+            hSet = id;
+        }
+
+        // Make a naive dirty checker if a dirty checker is not specified
+        if (!dirtyChecker) {
+            dirtyChecker = dirtyCheckers.naive();
+        }
 
         this.dirtyCheckers[hSet] = dirtyChecker;
         this.stats[hSet] = {
@@ -206,7 +217,7 @@ class QueueP {
     /**
      * Update/Insert an entry of/to the dataset and enqueue to be delayed processed if the entry is evaluated as dirty
      *
-     * @param {string} hSet - Key of the parent dataset
+     * @param {string} hSet - Id of the parent queue
      * @param {string} key - Key of the data to be queued
      * @param {Object|string|number} data - data to be enqueued for delayed processing
      * @param {function} [callback] - optional callback
