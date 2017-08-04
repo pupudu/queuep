@@ -1,10 +1,21 @@
 {
   "name": "queuep",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Redis backed queue optimized for congestion control and just that",
   "main": "dist/QueueP.js",
   "author": "pubudud",
   "license": "MIT",
+  "keywords": [
+    "congestion",
+    "performance",
+    "queue",
+    "qp",
+    "congestion-control",
+    "load-control",
+    "smart-queue",
+    "keep-alive",
+    "framework"
+  ],
   "url": "https://github.com/pupudu/queuep/issues",
   "email": "pubudu.dodan@gmail.com",
   "repository": {
