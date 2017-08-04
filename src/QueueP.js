@@ -12,7 +12,8 @@ import {
     noop,
     fakeLogger as logger,
     dirtyCheckers,
-    getStatsString
+    getStatsString,
+    CALLBACK_ARG_POSITION
 } from './constants';
 
 /**
@@ -100,13 +101,13 @@ class QueueP {
                 .then((entry) => {
                     if (entry && entry.isDirty) {
 
-                        if (consumer.length === 1) { // Promise handlers for signalling using promise approach
-                            consumer(entry.data)
+                        if (consumer.length <= CALLBACK_ARG_POSITION) { // Promise handlers for signalling using promise approach
+                            consumer(key, entry.data)
                                 .then(this._markEntryAsDone.bind(this, hSet, key, entry))
                                 .catch(this._handleEntryConsumptionFailure.bind(this, hSet));
 
-                        } else { // length = 2 => Callback for signalling using callback approach
-                            consumer(entry.data, (err) => {
+                        } else { // length > CALLBACK_ARG_POSITION => Callback provided => Callback for signalling using callback approach
+                            consumer(key, entry.data, (err) => {
                                 if (err)
                                     return this._handleEntryConsumptionFailure(hSet, err);
 

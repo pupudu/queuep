@@ -41,3 +41,5 @@ export const getStatsString = (hSet, keyQueue, stats) =>
     Processed Count: ${stats.processedCount},
     Failure Count: ${stats.failureCount}
     `;
+
+export const CALLBACK_ARG_POSITION = 2; // Starting from 0
