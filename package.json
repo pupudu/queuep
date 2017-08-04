@@ -1,6 +1,6 @@
 {
   "name": "queuep",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Redis backed queue optimized for congestion control and just that",
   "main": "dist/QueueP.js",
   "author": "pubudud",
@@ -14,7 +14,14 @@
     "load-control",
     "smart-queue",
     "keep-alive",
-    "framework"
+    "framework",
+    "priority",
+    "promise",
+    "callback",
+    "async",
+    "distinct-processing",
+    "ignore-duplicates",
+    "flow-control"
   ],
   "url": "https://github.com/pupudu/queuep/issues",
   "email": "pubudu.dodan@gmail.com",
