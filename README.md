@@ -40,9 +40,10 @@ initQueue and publish method calls can be in the same module or in different mod
 A function which accepts two arguments. First argument will give the data published from the publish method. The second argument is an error-first callback that should be called to signal QueueP that the consume task has finished.
 See example:
 
-    let updateOnlineStatus = (data, callback) {
+    let updateOnlineStatus = (key, data, callback) {
 
-        let {deviceId, onlineStatus} = data;
+        let onlineStatus = data,
+            deviceId = key;
 
         deviceDao.updateOnlineStatus(deviceId, onlineStatus, function (err) {
             if (err) {
@@ -54,9 +55,10 @@ See example:
 A function which accepts a single argument and returns a promise. First argument is as same as above. The promise can be resolved or rejected to signal QueueP that the consume task has finished.
 See example:
 
-    let updateOnlineStatus = (data) {
+    let updateOnlineStatus = (key, data) {
 
-        let {deviceId, onlineStatus} = data;
+        let onlineStatus = data,
+            deviceId = key;
 
         return new Promise((resolve, reject) => {
             deviceDao.updateOnlineStatus(deviceId, onlineStatus)
