@@ -20,17 +20,14 @@ First, initialize a queue(can have multiple queues) with the minimal required co
 
     import qp from 'queuep';
 
-    qp.initQueue({
-        id: "app_online_status",
+    qp.initQueue("app_online_status", {
         consumer: updateOnlineStatus
     });
 
 Then you can publish data to the queue.
 
-    qp.publish("app_online_status", deviceId, {
-        onlineStatus: onlineStatus,
-        deviceId: deviceId
-    });
+    qp.publish("app_online_status", deviceId, onlineStatus);
+    
 initQueue and publish method calls can be in the same module or in different modules. I personally prefer to keep the initQueue and publish methods in the same module. But that is completely up to you to decide.
 
 * Note 1: The argument **id** is used to identify the queue. An application can have any number of queuep queues.
@@ -40,7 +37,7 @@ initQueue and publish method calls can be in the same module or in different mod
 A function which accepts two arguments. First argument will give the data published from the publish method. The second argument is an error-first callback that should be called to signal QueueP that the consume task has finished.
 See example:
 
-    let updateOnlineStatus = (key, data, callback) {
+    let updateOnlineStatus = (key, data, callback) => {
 
         let onlineStatus = data,
             deviceId = key;
@@ -55,7 +52,7 @@ See example:
 A function which accepts a single argument and returns a promise. First argument is as same as above. The promise can be resolved or rejected to signal QueueP that the consume task has finished.
 See example:
 
-    let updateOnlineStatus = (key, data) {
+    let updateOnlineStatus = (key, data) => {
 
         let onlineStatus = data,
             deviceId = key;
