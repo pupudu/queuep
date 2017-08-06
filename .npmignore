@@ -12,6 +12,7 @@ git-hooks
 .eslintrc
 .gitignore
 .babelrc
+.idea
 LICENSE
 
 # Auto Generating Files
