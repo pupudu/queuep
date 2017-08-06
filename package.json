@@ -1,6 +1,6 @@
 {
   "name": "queuep",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "Redis backed queue optimized for congestion control and just that",
   "main": "dist/QueueP.js",
   "author": "pubudud",
