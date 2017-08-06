@@ -1,0 +1,21 @@
+# Source Files and dev tools
+src/
+gulpfile.js
+docs
+git-hooks
+
+# Tests and Test examples
+# TODO Following line should be uncommented later
+# dist/tester.js
+
+# Config Files
+.eslintrc
+.gitignore
+.babelrc
+LICENSE
+
+# Auto Generating Files
+yarn.lock
+
+# Other files
+CONTRIBUTING.md
