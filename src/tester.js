@@ -20,7 +20,8 @@ class Tester {
             interval: 2000
         });
 
-        this.instance.on("error", console.error);
+        this.instance.on("error", console.info.bind(console, "*** Error: "));
+        this.instance.on("duplicate", console.info.bind(console, "*** Duplicate: "));
 
         setInterval(() => {
             qp.getQueueInstance("fake_1").printStats();
@@ -46,7 +47,7 @@ class Tester {
             let deviceId = `device-${parseInt(Math.random() * 10)}`,
                 value = parseInt(Math.random() * 2);
 
-            console.log("**Publishing**", deviceId, value);
+            console.log("~~Publishing~~", deviceId, value);
 
             this.instance.publish(deviceId, {
                 deviceId,
