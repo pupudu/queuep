@@ -2,13 +2,13 @@
  * Created by pubudud on 8/4/17.
  */
 
-import qp from './QueueP';
+import qp from './queuep';
 
 /**
  * Represents an instance of a queue initialized using the QueueP interface
  * This can be useful for interacting with a queue without explicitly providing the qId
  */
-export default class QInstance {
+export default class QInterface {
 
     /**
      * @param {string} qId - Id of a Queue initialized with QueueP
@@ -34,10 +34,25 @@ export default class QInstance {
     }
 
     /**
-     * @param {Array} args - arguments array
      * @return {Promise|undefined} <-
      */
-    getStats(...args) {
-        return qp.getStats(this.qId, ...args);
+    getStats() {
+        return qp.getStats(this.qId);
+    }
+
+    /**
+     * Add event listener to a target queue
+     * @param {Array} args - any other arguments as applicable
+     */
+    on(...args) {
+        qp.on(this.qId, ...args);
+    }
+
+    /**
+     * Set the storage of the queue
+     * @param {Array} args - any other arguments as applicable
+     */
+    setStore(...args) {
+        qp.setStore(this.qId, ...args);
     }
 }
