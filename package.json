@@ -1,6 +1,6 @@
 {
   "name": "queuep",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "High Performance Congestion Control Map-Queue hybrid for NodeJs applications",
   "main": "dist/queuep.js",
   "author": "pubudud",

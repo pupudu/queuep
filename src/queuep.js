@@ -22,6 +22,7 @@ class QueueP {
     constructor() {
         this.queueMap = {};
         this.logger = fakeLogger;
+        this.Store = StateStore;
 
         return this;
     }
@@ -33,7 +34,7 @@ class QueueP {
      */
     init(logger, Store) {
         this.logger = logger || this.logger;
-        this.Store = Store || StateStore;
+        this.Store = Store || this.Store;
     }
 
 
