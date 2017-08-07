@@ -1,8 +1,8 @@
 {
   "name": "queuep",
-  "version": "0.0.11",
-  "description": "Redis backed queue optimized for congestion control and just that",
-  "main": "dist/QueueP.js",
+  "version": "1.0.0",
+  "description": "High Performance Congestion Control Map-Queue hybrid for NodeJs applications",
+  "main": "dist/queuep.js",
   "author": "pubudud",
   "license": "MIT",
   "keywords": [
