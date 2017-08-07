@@ -107,7 +107,7 @@ export default class Queue {
 
                     // Redundant check, just to be safe
                     if (!entry || !entry.isDirty) {
-                        this.eventHandlers[EVENTS.DUPLICATE]();
+                        this.eventHandlers[EVENTS.DUPLICATE](this.qId, key);
                         return;
                     }
 
@@ -154,7 +154,7 @@ export default class Queue {
         this.store.markEntryAsDone(key, entry)
             .then(() => {
                 // Call event listener if given
-                this.eventHandlers[EVENTS.CONSUME]();
+                this.eventHandlers[EVENTS.CONSUME](this.qId, key);
 
                 // Update stats
                 this.stats.processedCount++;
@@ -169,7 +169,7 @@ export default class Queue {
      * @private
      */
     enqueue(key) {
-        this.eventHandlers[EVENTS.ENQUEUE]();
+        this.eventHandlers[EVENTS.ENQUEUE](this.qId, key);
         if (this.keyQueue.indexOf(key) === -1) {
             this.keyQueue.push(key);
         }
@@ -192,7 +192,7 @@ export default class Queue {
                         isDirty = this.dirtyChecker(oldData, data);
 
                     if (!isDirty) {
-                        this.eventHandlers[EVENTS.DUPLICATE]();
+                        this.eventHandlers[EVENTS.DUPLICATE](this.qId, key);
                         return resolve("Skipping duplicate");
                     }
 
