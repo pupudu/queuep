@@ -5,6 +5,10 @@ QueueP is a framework designed for congestion control in NodeJs applications. It
 
 This does not mean that data or data consistency is sacrificed. However QueueP tries to keep the application alive and process data as much as possible, and just ignore the overflow, in critical situations. In simple words, QueueP will tolerate inconsistency and data loss in cases where the application would have crashed/stopped-responding if QueueP was not present.
 
+### Release Notes
+QueueP v1.0.0 is finally here. Here-on every new release of QueueP will be **backward compatible**.
+Redis Strategy which used to ship with QueueP now ships as a separate package named **queuep-redis**. We hope to publish similar packages using different technologies for providing a universal experience with QueueP. 
+
 ### Installation
 To install the stable version:
 
