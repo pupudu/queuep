@@ -4,7 +4,7 @@
 
 /* eslint-disable */
 
-import qp from './QueueP';
+import qp from './queuep';
 
 /**
  * This module will be used for testing new changes of QueueP framework
@@ -12,13 +12,18 @@ import qp from './QueueP';
 class Tester {
 
     constructor() {
+
+        qp.init(console);
+
         this.instance = qp.initQueue("fake_1", {
             consumer: this.fakeConsumer,
             interval: 2000
         });
 
+        this.instance.on("error", console.error);
+
         setInterval(() => {
-            qp.getQueueInstance("fake_1").printStats(console);
+            qp.getQueueInstance("fake_1").printStats();
         }, 1000 * 5);
     }
 
@@ -29,7 +34,7 @@ class Tester {
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                return rand % 7 === 0 ? reject() : resolve();
+                return rand % 7 === 0 ? reject("**Seven is not so lucky today**") : resolve();
             }, rand);
         });
     }
