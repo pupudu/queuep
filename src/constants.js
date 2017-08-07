@@ -34,12 +34,30 @@ export const dirtyCheckers = {
 };
 
 // binding the QueueP scope to `this` should be done for this method to work properly
-export const getStatsString = (hSet, keyQueue, stats) =>
-    `hSet: ${hSet}
-    Remaining entry count in Queue: ${keyQueue.length}
-    Interval: ${stats.interval}
-    Processed Count: ${stats.processedCount},
-    Failure Count: ${stats.failureCount}
+export const getStatsString = (qId, {queueLength, interval, processedCount, failureCount}) =>
+    `qId: ${qId}
+    Remaining entry count in Queue: ${queueLength}
+    Interval: ${interval}
+    Processed Count: ${processedCount},
+    Failure Count: ${failureCount}
     `;
 
 export const CALLBACK_ARG_POSITION = 2; // Starting from 0
+
+export const EVENTS = {
+    ERROR: "error",
+    EMPTY: "empty",
+    FULL: "full",
+    DUPLICATE: "duplicate",
+    ENQUEUE: "enqueue",
+    CONSUME: "consume"
+};
+
+export const SUPPORTED_EVENTS = [
+    EVENTS.ERROR,
+    EVENTS.EMPTY,
+    EVENTS.FULL,
+    EVENTS.DUPLICATE,
+    EVENTS.ENQUEUE,
+    EVENTS.CONSUME
+];
