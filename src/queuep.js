@@ -29,10 +29,10 @@ class QueueP {
 
     /**
      * Init QueueP with custom configs
-     * @param {Object} [logger] - a logger instance
      * @param {StateStore} Store - Class reference of a QueueP Store
+     * @param {Object} [logger] - a logger instance
      */
-    init(logger, Store) {
+    init(Store, logger) {
         this.logger = logger || this.logger;
         this.Store = Store || this.Store;
     }
@@ -45,18 +45,18 @@ class QueueP {
      * @param {number} [interval = 1000] - Interval for executing the consumer function
      * @param {function} [dirtyChecker] - Function to evaluate whether overriding value is different from earlier
      * @param {function} consumer - Function which implements the consumer logic
-     * @param {Object} [store] - intermediate storage for the queue
+     * @param {Function} [storeClass] - intermediate storage for the queue
      *
      * @returns {QInterface} - instance of QInterface to allow easy interaction with the initialized queue
      */
-    initQueue(qId, {interval, dirtyChecker, consumer, store}) {
+    initQueue(qId, {interval, dirtyChecker, consumer, storeClass}) {
 
         // Create a queuep queue
         let queue = new Queue(this.logger);
 
-        //
-        let Store = this.Store;
-        store = store || new Store(qId);
+        // Create store instance
+        let Store = storeClass || this.Store;
+        let store = new Store(qId);
 
         // Initialize queue with base configurations and save reference
         queue.init(qId, {interval, dirtyChecker, consumer, store});
