@@ -13,7 +13,7 @@ class Tester {
 
     constructor() {
 
-        qp.init(console);
+        qp.init(null, console);
 
         this.instance = qp.initQueue("fake_1", {
             consumer: this.fakeConsumer,

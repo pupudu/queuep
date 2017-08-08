@@ -82,10 +82,10 @@ export default class Queue {
 
     /**
      * Set the storage strategy of the queue
-     * @param {Object} store <-
+     * @param {Function} Store - Store definition which can be instantiated
      */
-    setStore(store) {
-        this.store = store;
+    setStore(Store) {
+        this.store = new Store(this.qId);
     }
 
     /**

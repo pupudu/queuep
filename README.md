@@ -92,7 +92,7 @@ The internal algorithm used in QueueP takes measures to avoid starvation without
 #### Backed by redis
 QueueP supports(optional) redis as the intermediate storage for published data. This ensures that queued data is preserved even if the NodeJs application was restarted. 
 
-QueueP v0.0.7 has the redis strategy built in. However, redis strategy will be taken out and will be implemented as a plugin. This will make the core library even lighter while opening the opportunity to use other methods of intermediate storage such as rabbitMq or nats. 
+Earlier versions of QueueP had the redis strategy built in. However, redis strategy was taken out and will be implemented as a plugin. This will make the core library even lighter while opening the opportunity to use other methods of intermediate storage such as rabbitMq or nats. 
 
 ### License
 MIT
