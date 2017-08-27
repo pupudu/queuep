@@ -1,0 +1,5 @@
+{
+  "name": "queuep/dirtyCheckers",
+  "private": true,
+  "main": "../dist/dirtyCheckers.js"
+}
