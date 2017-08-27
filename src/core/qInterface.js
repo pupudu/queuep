@@ -2,7 +2,7 @@
  * Created by pubudud on 8/4/17.
  */
 
-import qp from './queuep';
+import qp from '../queuep';
 
 /**
  * Represents an instance of a queue initialized using the QueueP interface

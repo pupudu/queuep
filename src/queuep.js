@@ -2,13 +2,11 @@
  * Created by pubudud on 8/7/17.
  */
 
-import {
-    fakeLogger,
-    dirtyCheckers
-} from './constants';
-import Queue from './queue';
-import StateStore from './stateStore';
-import QInterface from './qInterface';
+import {fakeLogger} from './helpers/utils';
+import * as dirtyCheckers from './dirtyCheckers';
+import Queue from './core/queue';
+import StateStore from './core/stateStore';
+import QInterface from './core/qInterface';
 
 /**
  * High Performance Congestion Control Map-Queue hybrid for NodeJs applications
@@ -202,6 +200,15 @@ class QueueP {
     }
 }
 
-
+/**
+ * @module QueueP
+ */
 export default new QueueP();
-export const makeObjectDirtyChecker = dirtyCheckers.fieldBased;
+
+// Dirty Checker templates
+export const makeObjectDirtyChecker = dirtyCheckers.makeFieldBasedChecker;
+export const makeExpirationChecker = dirtyCheckers.makeExpirationChecker;
+export const makeNaiveChecker = dirtyCheckers.makeNaiveChecker;
+export const makeSkippedCountChecker = dirtyCheckers.makeSkippedCountChecker;
+export const combine = dirtyCheckers.combine;
+export const combineStrict = dirtyCheckers.combineStrict;
