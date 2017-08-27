@@ -1,4 +1,8 @@
 # <a href='http://queuep.netlify.com/'><img src='http://i.imgur.com/24TwZl4.png' height='100'></a>
+
+[![Build Status](https://travis-ci.org/pupudu/queuep.svg?branch=master)](https://travis-ci.org/pupudu/queuep) 
+[![Code Climate](https://codeclimate.com/github/pupudu/queuep/badges/gpa.svg)](https://codeclimate.com/github/pupudu/queuep)
+
 Pronounced: "queue-pea" https://pupudu.gitbooks.io/queuep/content/ http://queuep.netlify.com/
 
 QueueP is a framework originally designed for congestion control in NodeJs applications. 
