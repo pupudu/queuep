@@ -4,13 +4,12 @@
 
 import {
     DEFAULT_INTERVAL,
-    noop,
-    dirtyCheckers,
     CALLBACK_ARG_POSITION,
     EVENTS,
-    SUPPORTED_EVENTS,
-    getStatsString
-} from './constants';
+    SUPPORTED_EVENTS
+} from '../helpers/constants';
+import {noop, getStatsString} from '../helpers/utils';
+import * as dirtyCheckers from '../dirtyCheckers';
 
 
 /**
@@ -62,7 +61,7 @@ export default class Queue {
         this.stats.interval = interval || this.stats.interval;
 
         // Set Queue attributes
-        this.dirtyChecker = dirtyChecker || dirtyCheckers.naive();
+        this.dirtyChecker = dirtyChecker || dirtyCheckers.makeNaiveChecker();
         this.store = store;
         this.interval = interval || this.interval;
         this.consumer = consumer;
@@ -189,9 +188,14 @@ export default class Queue {
                 .then((entry) => {
 
                     let oldData = entry.data,
-                        isDirty = this.dirtyChecker(oldData, data);
+                        isDirty = this.dirtyChecker(oldData, data, {
+                            time: entry.time,
+                            skippedCount: entry.skippedCount,
+                            isDirty: entry.isDirty
+                        });
 
                     if (!isDirty) {
+                        entry.skippedCount++;
                         this.eventHandlers[EVENTS.DUPLICATE](this.qId, key);
                         return resolve("Skipping duplicate");
                     }
@@ -200,7 +204,9 @@ export default class Queue {
                     this.store
                         .setEntry(key, {
                             data: data,
-                            isDirty: true
+                            isDirty: true,
+                            time: new Date().getTime(),
+                            skippedCount: 0
                         })
                         .then(() => {
                             this.enqueue(key);

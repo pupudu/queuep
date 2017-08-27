@@ -4,7 +4,7 @@
 
 /* eslint-disable */
 
-import qp from './queuep';
+import qp, {makeObjectDirtyChecker, makeExpirationChecker} from './queuep';
 
 /**
  * This module will be used for testing new changes of QueueP framework
@@ -17,14 +17,15 @@ class Tester {
 
         this.instance = qp.initQueue("fake_1", {
             consumer: this.fakeConsumer,
-            interval: 2000
+            interval: 2000,
+            dirtyChecker: makeExpirationChecker(10)
         });
 
         this.instance.on("error", console.info.bind(console, "*** Error: "));
         this.instance.on("duplicate", console.info.bind(console, "*** Duplicate: "));
 
         setInterval(() => {
-            qp.getQueueInstance("fake_1").printStats();
+            qp.getQueueInstance("fake_1").printStats("warn");
         }, 1000 * 5);
     }
 
