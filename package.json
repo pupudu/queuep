@@ -1,6 +1,6 @@
 {
   "name": "queuep",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "High Performance Congestion Control Map-Queue hybrid for NodeJs applications",
   "main": "dist/queuep.js",
   "author": "pubudud",
@@ -38,18 +38,21 @@
     "git-unstaged-changes": "git diff --quiet",
     "git-branch": "bash git-hooks/branch.sh",
     "lint-staged": "lint-staged",
-    "test": "NODE_ENV='test' STRATEGY='unit' mocha 'src/**/*.test.js' --compilers js:babel-core/register --reporter spec  --timeout 10000 --recursive "
+    "test": "NODE_ENV='test' STRATEGY='unit' nyc --reporter=html --reporter=text mocha 'src/**/*.test.js' --compilers js:babel-core/register --reporter spec  --timeout 10000 --recursive",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {},
   "devDependencies": {
     "babel-preset-es2015": "^6.24.0",
     "babel-preset-node6": "^11.0.0",
     "chai": "^4.1.1",
-    "eslint": "^3.16.1",
+    "coveralls": "^2.13.1",
+    "eslint": "^4.5.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "lint-staged": "^3.3.1",
+    "lint-staged": "^4.0.4",
     "mocha": "^3.5.0",
+    "nyc": "^11.1.0",
     "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1"
   },

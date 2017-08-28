@@ -3,7 +3,7 @@
  */
 
 import {expect} from 'chai';
-import {getStatsString} from '../utils';
+import {getStatsString, noop} from '../utils';
 
 describe('Unit tests for helper util functions', function () {
     it('returns a stats string when arguments as required are provided', function () {
@@ -20,5 +20,10 @@ describe('Unit tests for helper util functions', function () {
         expect(statString).to.include("Interval: 10");
         expect(statString).to.include("Processed Count: 100");
         expect(statString).to.include("Failure Count: 2");
+    });
+
+    it('executes noop function without throwing exceptions', function (done) {
+        noop();
+        return done();
     });
 });

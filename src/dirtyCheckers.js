@@ -53,16 +53,13 @@ export const makeExpirationChecker = (start, end, unit) => {
 export const makeSkippedCountChecker = (start, end) =>
     (prev, next, prevProps) => prevProps.skippedCount >= start + parseFloat(Math.random() * ((end || start) - start));
 
-export const combineStrict = (...checkers) =>
-    (...args) =>
-        checkers.reduce((isDirty, checker) =>
-            isDirty && checker(...args),
-            true
-        );
+export const combineStrict = (...checkers) => (...args) =>
+    checkers.reduce((isDirty, checker) => isDirty && checker(...args),
+        true
+    );
 
-export const combine = (...checkers) =>
-    (...args) =>
-        checkers.reduce((isDirty, checker) =>
-            isDirty || checker(...args),
-            false
-        );
+export const combine = (...checkers) => (...args) =>
+    checkers.reduce(
+        (isDirty, checker) => isDirty || checker(...args),
+        false
+    );
