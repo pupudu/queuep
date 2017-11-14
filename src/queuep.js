@@ -163,6 +163,23 @@ class QueueP {
         queue.printStats(level);
     }
 
+
+    /**
+     * Get the latest entry of corresponding to the given key of the target queue
+     * @param {string} qId - queue Id
+     * @param {string} key - key of the target entry
+     * @returns {*} entry object with a data attribute
+     */
+    getEntry(qId, key) {
+        const queue = this.getQueue(qId);
+
+        if (!queue) return Promise.reject(
+            new Error("QP Queue With given qId does not exist! Have you initialized the queue?")
+        );
+
+        return queue.getEntry(key);
+    }
+
     /**
      * Add event listener to a target queue
      * @param {string} qId - queuep queue Id
