@@ -50,11 +50,11 @@ class QueueP {
     initQueue(qId, {interval, dirtyChecker, consumer, storeClass}) {
 
         // Create a queuep queue
-        let queue = new Queue(this.logger);
+        const queue = new Queue(this.logger);
 
         // Create store instance
-        let Store = storeClass || this.Store;
-        let store = new Store(qId);
+        const Store = storeClass || this.Store,
+            store = new Store(qId);
 
         // Initialize queue with base configurations and save reference
         queue.init(qId, {interval, dirtyChecker, consumer, store});
@@ -126,7 +126,7 @@ class QueueP {
      */
     publish(qId, key, data, callback) {
         return this._returnPromiseOrCallback(new Promise((resolve, reject) => {
-            let queue = this.getQueue(qId);
+            const queue = this.getQueue(qId);
 
             if (!queue) {
                 return reject(new Error("QP Queue With given qId does not exist! Have you initialized the queue?"));
@@ -143,7 +143,7 @@ class QueueP {
      * @return {Object} - stat object
      */
     getStats(qId) {
-        let queue = this.getQueue(qId);
+        const queue = this.getQueue(qId);
 
         if (!queue) {
             return {};
@@ -156,7 +156,7 @@ class QueueP {
      * @param {String} [level] - override log level
      */
     printStats(qId, level = "info") {
-        let queue = this.getQueue(qId);
+        const queue = this.getQueue(qId);
 
         if (!queue) return;
 
@@ -169,7 +169,7 @@ class QueueP {
      * @param {Array} args - any other arguments as applicable
      */
     on(qId, ...args) {
-        let queue = this.getQueue(qId);
+        const queue = this.getQueue(qId);
 
         if (!queue) return;
 
@@ -182,7 +182,7 @@ class QueueP {
      * @param {Array} args - any other arguments as applicable
      */
     setStore(qId, ...args) {
-        let queue = this.getQueue(qId);
+        const queue = this.getQueue(qId);
 
         if (!queue) return;
 

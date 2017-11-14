@@ -94,7 +94,7 @@ export default class Queue {
     startWorker() {
         this.worker = setInterval(() => {
 
-            let key = this.keyQueue.shift();
+            const key = this.keyQueue.shift();
 
             // Proceed only if there are pending items in the queue
             if (!key) {
@@ -187,7 +187,7 @@ export default class Queue {
             this.store.getEntry(key)
                 .then((entry) => {
 
-                    let oldData = entry.data,
+                    const oldData = entry.data,
                         isDirty = this.dirtyChecker(oldData, data, {
                             time: entry.time,
                             skippedCount: entry.skippedCount,

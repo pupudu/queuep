@@ -7,7 +7,7 @@ import {getStatsString, noop} from '../utils';
 
 describe('Unit tests for helper util functions', function () {
     it('returns a stats string when arguments as required are provided', function () {
-        let statString = getStatsString("myQ", {
+        const statString = getStatsString("myQ", {
             queueLength: 100,
             interval: 10,
             failureCount: 2,

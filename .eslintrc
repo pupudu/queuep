@@ -62,11 +62,10 @@
     // ES6
     "arrow-body-style": ["error"],
     "no-var": ["error"],
-//    "prefer-const": ["error"],
+    "prefer-const": ["error"],
 
     // Variables
     "no-undef-init": ["error"],
-//    "init-declarations": ["error"],
     "no-use-before-define": ["error"]
   }
 }
