@@ -55,4 +55,13 @@ export default class QInterface {
     setStore(...args) {
         qp.setStore(this.qId, ...args);
     }
+
+    /**
+     * Returns the entry object with latest data updated
+     * @param {Array} args - any other arguments as applicable
+     * @return {Promise|undefined} <-
+     */
+    getEntry(...args) {
+        return qp.getEntry(this.qId, ...args);
+    }
 }

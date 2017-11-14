@@ -50,6 +50,10 @@ class Tester {
 
             console.log("~~Publishing~~", deviceId, value);
 
+            this.instance.getEntry('device-1').then((entry)=>{
+                console.log(entry);
+            });
+
             this.instance.publish(deviceId, {
                 deviceId,
                 value
