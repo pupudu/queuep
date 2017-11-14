@@ -242,4 +242,13 @@ export default class Queue {
         );
     }
 
+    /**
+     * Get the entry (with the data which was processed last) given the key
+     * @param {string} key <-
+     * @returns {*|Promise} entry object with data attribute
+     */
+    getEntry(key) {
+        return this.store.getEntry(key);
+    }
+
 }

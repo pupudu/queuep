@@ -1,5 +1,5 @@
-let gulp = require("gulp");
-let babel = require("gulp-babel");
+const gulp = require("gulp");
+const babel = require("gulp-babel");
 
 gulp.task("babel", () =>
     gulp.src(["src/**/*.js", "!src/**/*.test.js"])
