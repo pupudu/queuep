@@ -9,14 +9,18 @@ git-hooks
 # dist/tester.js
 
 # Config Files
+LICENSE
+.idea
 .eslintrc
 .gitignore
 .babelrc
-.idea
-LICENSE
+.codeclimate.yml
+.travis.yml
 
 # Auto Generating Files
 yarn.lock
+coverage/
+.nyc_output/
 
 # Other files
 CONTRIBUTING.md

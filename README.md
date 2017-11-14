@@ -2,19 +2,17 @@
 
 [![Build Status](https://travis-ci.org/pupudu/queuep.svg?branch=master)](https://travis-ci.org/pupudu/queuep) 
 [![Code Climate](https://codeclimate.com/github/pupudu/queuep/badges/gpa.svg)](https://codeclimate.com/github/pupudu/queuep)
+[![Coverage Status](https://coveralls.io/repos/github/pupudu/queuep/badge.svg?branch=master)](https://coveralls.io/github/pupudu/queuep?branch=master)
 
 Pronounced: "queue-pea" https://pupudu.gitbooks.io/queuep/content/ http://queuep.netlify.com/
 
-QueueP is a framework originally designed for congestion control in NodeJs applications. 
-With time, it was improved to be able to run on **any** JavaScript application. 
-It is more often useful for scenarios where redundant requests should be ignored. 
+An API which will be consumed by multiple clients will eventually reach a point when the resources
+of the hosting server is insufficient to handle the incoming load. QueueP is a framework designed 
+for congestion control in such scenarios to **avoid using resources unneccessarily** saving money
+and time.
+ 
+QueueP is more often useful for scenarios where redundant requests should be ignored. 
 However, QueueP can be used in any other case where performance is affected by a heavy load of data.
-
-### Release Notes
-QueueP v1.0.0 is finally here. Here-on every new release of QueueP will be **backward compatible**.
-Redis Strategy which used to ship with QueueP now ships as a separate package named **queuep-redis**. 
-We hope to publish similar packages using different technologies for providing a 
-universal experience with QueueP. 
 
 ### Why QueueP?
 None of the similar queue libraries have a concept of avoiding duplicate requests
@@ -45,16 +43,20 @@ Let's assume that 5000 devices are sending data to an endpoint about their onlin
 First, initialize a queue(can have multiple queues) with the minimal required configurations. 
 Constructor of a module is a good place to keep the initQueue code.
 
-    import qp from 'queuep';
+```js
+import qp from 'queuep';
 
-    qp.initQueue("app_online_status", {
-        consumer: updateOnlineStatus
-    });
+qp.initQueue("app_online_status", {
+    consumer: updateOnlineStatus
+});
+```
 
 Then you can publish data to the queue.
 
-    qp.publish("app_online_status", deviceId, onlineStatus);
-    
+```js
+qp.publish("app_online_status", deviceId, onlineStatus);
+```
+
 initQueue and publish method calls can be in the same module or in different modules. 
 I personally prefer to keep the initQueue and publish methods in the same module. 
 But that is completely up to you to decide.
@@ -70,34 +72,39 @@ The 3rd argument is an error-first callback that should be called to signal Queu
 has finished.
 See example:
 
-    let updateOnlineStatus = (key, data, callback) => {
+```js
+let updateOnlineStatus = (key, data, callback) => {
 
-        let onlineStatus = data,
-            deviceId = key;
+    let onlineStatus = data,
+        deviceId = key;
 
-        deviceDao.updateOnlineStatus(deviceId, onlineStatus, function (err) {
-            if (err) {
-                return callback(err)
-            }
-            return callback();
-        });
-    }
+    deviceDao.updateOnlineStatus(deviceId, onlineStatus, function (err) {
+        if (err) {
+            return callback(err)
+        }
+        return callback();
+    });
+}
+```
+    
 A function which accepts 2 arguments and returns a promise. First 2 arguments are as same as above. 
 The promise can be resolved or rejected to signal QueueP that the consume task has finished.
 See example:
 
-    let updateOnlineStatus = (key, data) => {
+```js
+let updateOnlineStatus = (key, data) => {
 
-        let onlineStatus = data,
-            deviceId = key;
+    let onlineStatus = data,
+        deviceId = key;
 
-        return new Promise((resolve, reject) => {
-            deviceDao.updateOnlineStatus(deviceId, onlineStatus)
-                .then(resolve)
-                .catch(reject);
-        });
-    }
-
+    return new Promise((resolve, reject) => {
+        deviceDao.updateOnlineStatus(deviceId, onlineStatus)
+            .then(resolve)
+            .catch(reject);
+    });
+}
+```
+    
 ### Background
 I wrote queuep to fix an issue in a project I was working on. 
 The story in brief and the fundamental advantages of using QueueP can be found at 
