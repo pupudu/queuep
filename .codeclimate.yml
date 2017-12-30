@@ -1,11 +1,7 @@
 
-engines:
+plugins:
   eslint:
     enabled: true
 
-ratings:
-  paths:
-  - src/**
-
-exclude_paths:
+#exclude_patterns:
 #- vendor/**/*
