@@ -1,7 +1,23 @@
+version: "2"
+
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 5
+  file-lines:
+    enabled: true
+    config:
+      threshold: 400
+  method-lines:
+    enabled: true
+    config:
+      threshold: 30
+  similar-code:
+    enabled: false
+    config:
+      threshold: 5 #overriding will affect all languages
 
 plugins:
   eslint:
     enabled: true
-
-#exclude_patterns:
-#- vendor/**/*
