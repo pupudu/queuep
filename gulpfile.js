@@ -1,8 +1,8 @@
 const gulp = require("gulp");
 const babel = require("gulp-babel");
 
-gulp.task("babel", () =>
-    gulp.src(["src/**/*.js", "!src/**/*.test.js"])
+gulp.task("babel", gulp.series(function babelSource() {
+    return gulp.src(["src/**/*.js"])
         .pipe(babel())
-        .pipe(gulp.dest("dist"))
-);
+        .pipe(gulp.dest("dist"));
+}));

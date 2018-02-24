@@ -1,0 +1,6 @@
+--reporter=html
+--reporter=text
+--reporter=spec
+--require=babel-core/register
+--timeout=10000
+--recursive

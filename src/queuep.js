@@ -43,18 +43,19 @@ class QueueP {
      * @param {number} [interval = 1000] - Interval for executing the consumer function
      * @param {function} [dirtyChecker] - Function to evaluate whether overriding value is different from earlier
      * @param {function} consumer - Function which implements the consumer logic
-     * @param {Function} [storeClass] - intermediate storage for the queue
+     * @param {Object} [storeSpec] - arguments to create an intermediate storage for the queue
      *
      * @returns {QInterface} - instance of QInterface to allow easy interaction with the initialized queue
      */
-    initQueue(qId, {interval, dirtyChecker, consumer, storeClass}) {
+    initQueue(qId, {interval, dirtyChecker, consumer, storeSpec = {}}) {
 
         // Create a queuep queue
         const queue = new Queue(this.logger);
 
         // Create store instance
-        const Store = storeClass || this.Store,
-            store = new Store(qId);
+        const Store = storeSpec.store || this.Store,
+            options = storeSpec.store ? storeSpec.options : this.storeOptions,
+            store = new Store(qId, options);
 
         // Initialize queue with base configurations and save reference
         queue.init(qId, {interval, dirtyChecker, consumer, store});
@@ -211,9 +212,11 @@ class QueueP {
      * unless specified otherwise explicitly
      *
      * @param {Object} Store - A function which implements the required methods to be a qp Store
+     * @param {storeOptions} storeOptions - options to be passed when creating an instance of the Store
      */
-    useStore(Store) {
+    useStore(Store, storeOptions) {
         this.Store = Store;
+        this.storeOptions = storeOptions;
     }
 }
 
