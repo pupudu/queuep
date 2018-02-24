@@ -1,6 +1,6 @@
 {
   "name": "queuep",
-  "version": "1.3.4",
+  "version": "1.3.13",
   "description": "High Performance Congestion Control Map-Queue hybrid for NodeJs applications",
   "main": "dist/queuep.js",
   "author": "pubudud",
@@ -14,6 +14,9 @@
     "load-control",
     "smart-queue",
     "keep-alive",
+    "throttle",
+    "memoized",
+    "memoize",
     "framework",
     "priority",
     "promise",
@@ -21,6 +24,9 @@
     "async",
     "distinct-processing",
     "ignore-duplicates",
+    "dedup",
+    "deduplication",
+    "compression",
     "flow-control"
   ],
   "url": "https://github.com/pupudu/queuep/issues",
